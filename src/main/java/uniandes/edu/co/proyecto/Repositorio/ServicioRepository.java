@@ -40,6 +40,9 @@ public interface ServicioRepository extends JpaRepository<Servicio, Long> {
     @Query(value = "SELECT * FROM Servicio", nativeQuery = true)
     Collection<Servicio> darServicios();
 
+    @Query(value = "SELECT * FROM Servicio WHERE id_usuario = :idUsuario", nativeQuery = true)
+    Collection<Servicio> darServiciosPorUsuario(@Param("id_usuario_cliente") Long idUsuario);
+
     @Query(value = "SELECT * FROM Servicio WHERE id = :id", nativeQuery = true)
     Servicio darServicioPorId(@Param("id") Long id);
 
