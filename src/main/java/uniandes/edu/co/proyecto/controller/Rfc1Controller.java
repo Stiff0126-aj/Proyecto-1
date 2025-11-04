@@ -25,8 +25,8 @@ public class Rfc1Controller {
     }
 
     //SERIALIZABLE
-    @GetMapping("/serializable")
-    @Transactional(isolation = Isolation.SERIALIZABLE, timeout = 30)
+    @GetMapping("/serializable/{idUsuario}")
+    @Transactional(isolation = Isolation.SERIALIZABLE, timeout = 60)
     public Map<String, Collection<Servicio>> rfc1Serializable(@PathVariable Long idUsuario) {
         Map<String, Collection<Servicio>> result = new HashMap<>();
 
@@ -36,7 +36,7 @@ public class Rfc1Controller {
 
         // Temporizador de 30s para observar concurrencia
         try {
-            Thread.sleep(30_000);
+            Thread.sleep(30000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -49,8 +49,8 @@ public class Rfc1Controller {
     }
 
     //READ COMMITTED
-    @GetMapping("/read_committed")
-    @Transactional(isolation = Isolation.READ_COMMITTED, timeout = 30)
+    @GetMapping("/read_committed/{idUsuario}")
+    @Transactional(isolation = Isolation.READ_COMMITTED, timeout = 60)
     public Map<String, Collection<Servicio>> rfc1ReadCommitted(@PathVariable Long idUsuario) {
         Map<String, Collection<Servicio>> result = new HashMap<>();
 
@@ -60,7 +60,7 @@ public class Rfc1Controller {
 
         // Temporizador de 30s para observar concurrencia
         try {
-            Thread.sleep(30_000);
+            Thread.sleep(30000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
