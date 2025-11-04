@@ -11,27 +11,27 @@ import org.springframework.transaction.annotation.Transactional;
 import uniandes.edu.co.proyecto.modelo.Usuario;
 
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
-    //RF2
-    @Query(value = "SELECT * FROM Usuario WHERE correo = :correo", nativeQuery = true)
+
+    @Query(value = "SELECT * FROM USUARIO WHERE CORREO = :correo", nativeQuery = true)
     Usuario buscarPorCorreo(@Param("correo") String correo);
 
-    @Query(value = "SELECT * FROM Usuario WHERE cedula = :cedula", nativeQuery = true)
+    @Query(value = "SELECT * FROM USUARIO WHERE CEDULA = :cedula", nativeQuery = true)
     Usuario buscarPorCedula(@Param("cedula") String cedula);
-    //////////////
-    @Query(value = "SELECT * FROM Usuario", nativeQuery = true)
+
+    @Query(value = "SELECT * FROM USUARIO", nativeQuery = true)
     Collection<Usuario> darUsuarios();
 
-    @Query(value = "SELECT * FROM Usuario WHERE id = :id", nativeQuery = true)
+    @Query(value = "SELECT * FROM USUARIO WHERE ID = :id", nativeQuery = true)
     Usuario darUsuarioPorId(@Param("id") Long id);
 
     @Modifying
     @Transactional
-    @Query(value = "DELETE FROM Usuario WHERE id = :id", nativeQuery = true)
+    @Query(value = "DELETE FROM USUARIO WHERE ID = :id", nativeQuery = true)
     void eliminarUsuario(@Param("id") Long id);
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE Usuario SET nombre = :nombre, correo = :correo, telefono = :telefono, cedula = :cedula, promedio_calificacion = :promedio WHERE id = :id", nativeQuery = true)
+    @Query(value = "UPDATE USUARIO SET NOMBRE = :nombre, CORREO = :correo, TELEFONO = :telefono, CEDULA = :cedula, PROMEDIO_CALIFICACION = :promedio WHERE ID = :id", nativeQuery = true)
     void actualizarUsuario(@Param("id") Long id,
                            @Param("nombre") String nombre,
                            @Param("correo") String correo,
@@ -41,11 +41,14 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO Usuario (id, nombre, correo, telefono, cedula, promedio_calificacion) VALUES (:id, :nombre, :correo, :telefono, :cedula, :promedio)", nativeQuery = true)
+    @Query(value = "INSERT INTO USUARIO (ID, NOMBRE, CORREO, TELEFONO, CEDULA, PROMEDIO_CALIFICACION) VALUES (:id, :nombre, :correo, :telefono, :cedula, :promedio)", nativeQuery = true)
     void insertarUsuario(@Param("id") Long id,
                          @Param("nombre") String nombre,
                          @Param("correo") String correo,
                          @Param("telefono") String telefono,
                          @Param("cedula") String cedula,
                          @Param("promedio") Double promedio);
+
+    @Query(value = "SELECT NVL(MAX(ID),0)+1 FROM USUARIO", nativeQuery = true)
+    Long siguienteIdUsuario();
 }

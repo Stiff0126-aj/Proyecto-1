@@ -17,11 +17,11 @@ public interface ServicioRepository extends JpaRepository<Servicio, Long> {
     // Buscar un conductor libre al azar
     @Query(value = """
         SELECT c.id_usuario
-        FROM Conductor c
+        FROM CONDUCTOR c
         WHERE NOT EXISTS (
-            SELECT 1 FROM Servicio s
+            SELECT 1 FROM SERVICIO s
             WHERE s.id_usuario_conductor = c.id_usuario
-            AND s.hora_finalizacion IS NULL
+              AND s.hora_finalizacion IS NULL
         )
         ORDER BY DBMS_RANDOM.VALUE
         FETCH FIRST 1 ROWS ONLY
@@ -31,35 +31,28 @@ public interface ServicioRepository extends JpaRepository<Servicio, Long> {
     // Cerrar un servicio (terminar viaje)
     @Modifying
     @Transactional
-    @Query(value = "UPDATE Servicio SET hora_finalizacion = :fin, precio = :precio WHERE id = :id", nativeQuery = true)
+    @Query(value = "UPDATE SERVICIO SET HORA_FINALIZACION = :fin, PRECIO = :precio WHERE ID = :id", nativeQuery = true)
     void cerrarServicio(@Param("id") Long id,
                         @Param("fin") java.sql.Timestamp fin,
                         @Param("precio") Double precio);
 
-
-    @Query(value = "SELECT * FROM Servicio", nativeQuery = true)
+    @Query(value = "SELECT * FROM SERVICIO", nativeQuery = true)
     Collection<Servicio> darServicios();
 
-    @Query(value = "SELECT * FROM Servicio WHERE id_usuario = :idUsuario", nativeQuery = true)
-    Collection<Servicio> darServiciosPorUsuario(@Param("id_usuario_cliente") Long idUsuario);
+    @Query(value = "SELECT * FROM SERVICIO WHERE ID_USUARIO_CLIENTE = :idUsuario", nativeQuery = true)
+    Collection<Servicio> darServiciosPorUsuario(@Param("idUsuario") Long idUsuario);
 
-    @Query(value = "SELECT * FROM Servicio WHERE id = :id", nativeQuery = true)
+    @Query(value = "SELECT * FROM SERVICIO WHERE ID = :id", nativeQuery = true)
     Servicio darServicioPorId(@Param("id") Long id);
 
     @Modifying
     @Transactional
-    @Query(value = "DELETE FROM Servicio WHERE id = :id", nativeQuery = true)
+    @Query(value = "DELETE FROM SERVICIO WHERE ID = :id", nativeQuery = true)
     void eliminarServicio(@Param("id") Long id);
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE Servicio " +
-                   "SET distancia_kilometros = :distancia, " +
-                   "    tarifa_kilometro = :tarifa, " +
-                   "    precio = :precio, " +
-                   "    hora_inicio = :inicio, " +
-                   "    hora_finalizacion = :fin " +
-                   "WHERE id = :id", nativeQuery = true)
+    @Query(value = "UPDATE SERVICIO SET DISTANCIA_KILOMETROS = :distancia, TARIFA_KILOMETRO = :tarifa, PRECIO = :precio, HORA_INICIO = :inicio, HORA_FINALIZACION = :fin WHERE ID = :id", nativeQuery = true)
     void actualizarServicio(@Param("id") Long id,
                             @Param("distancia") Double distancia,
                             @Param("tarifa") Double tarifa,
@@ -69,12 +62,22 @@ public interface ServicioRepository extends JpaRepository<Servicio, Long> {
 
     @Modifying
     @Transactional
-    @Query(value = "INSERT INTO Servicio (id, distancia_kilometros, tarifa_kilometro, precio, hora_inicio, hora_finalizacion) " +
-                   "VALUES (:id, :distancia, :tarifa, :precio, :inicio, :fin)", nativeQuery = true)
+    @Query(value = "INSERT INTO SERVICIO (ID, DISTANCIA_KILOMETROS, TARIFA_KILOMETRO, PRECIO, HORA_INICIO, HORA_FINALIZACION) VALUES (:id, :distancia, :tarifa, :precio, :inicio, :fin)", nativeQuery = true)
     void insertarServicio(@Param("id") Long id,
                           @Param("distancia") Double distancia,
                           @Param("tarifa") Double tarifa,
                           @Param("precio") Double precio,
                           @Param("inicio") Date inicio,
                           @Param("fin") Date fin);
+
+    @Query(value = "SELECT TARIFA_KILOMETRO FROM SERVICIO WHERE ID = :id", nativeQuery = true)
+    Double obtenerTarifaPorServicio(@Param("id") Long id);
+
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE SERVICIO SET HORA_FINALIZACION = :fin, DISTANCIA_KILOMETROS = :distancia, PRECIO = :precio WHERE ID = :id", nativeQuery = true)
+    int cerrarServicioRf9(@Param("id") Long id,
+                          @Param("fin") java.sql.Timestamp fin,
+                          @Param("distancia") Double distancia,
+                          @Param("precio") Double precio);
 }

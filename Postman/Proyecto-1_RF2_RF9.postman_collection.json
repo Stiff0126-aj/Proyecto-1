@@ -1,0 +1,118 @@
+{
+  "info": {
+    "name": "Proy RF2 y RF9",
+    "_postman_id": "e6f3d5c4-0000-0000-0000-rf2rf9abcd",
+    "description": "Probar RF2 (registrar usuario) y RF9 (finalizar servicio) en localhost:8080.\n\n",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "RF2 - Registrar usuario",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const ts = Date.now();",
+              "pm.environment.set('nombre', 'Usuario ' + ts);",
+              "pm.environment.set('correo', `usuario_${ts}@uniandes.edu.co`);",
+              "pm.environment.set('telefono', '300' + (ts % 10000000).toString().padStart(7,'0'));",
+              "pm.environment.set('cedula', (100000000 + (ts % 899999999)).toString());"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 201', function () {",
+              "  pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('Mensaje de creado', function(){",
+              "  pm.expect(pm.response.text()).to.include('Usuario registrado con ID');",
+              "});",
+              "",
+              "const m = pm.response.text().match(/ID=(\\d+)/);",
+              "if (m) { pm.environment.set('ultimoUsuarioId', m[1]); }"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"{{nombre}}\",\n  \"correo\": \"{{correo}}\",\n  \"telefono\": \"{{telefono}}\",\n  \"cedula\": \"{{cedula}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/usuarios/registrar",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "usuarios",
+            "registrar"
+          ]
+        },
+        "description": "Crea un usuario sin medio de pago (RF2)."
+      },
+      "response": []
+    },
+    {
+      "name": "RF9 - Finalizar servicio",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Mensaje de finalización', function(){",
+              "  pm.expect(pm.response.text()).to.include('Servicio ' + pm.environment.get('servicioId') + ' finalizado');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/servicios/{{servicioId}}/finalizar?distanciaKm={{distanciaKm}}{{precioQuery}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "servicios",
+            "{{servicioId}}",
+            "finalizar"
+          ],
+          "query": [
+            {
+              "key": "distanciaKm",
+              "value": "{{distanciaKm}}"
+            },
+            {
+              "key": "precioFinal",
+              "value": "{{precioFinal}}",
+              "disabled": true
+            }
+          ]
+        },
+        "description": "Finaliza un servicio con la distancia indicada (RF9)."
+      },
+      "response": []
+    }
+  ]
+}
